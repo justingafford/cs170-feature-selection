@@ -43,7 +43,7 @@ def CrossValidation(instances, instanceCount, existingFeatures, custFeature):
             correct += 1
 
     accuracy = correct / instanceCount
-    print("Testing features: ", featuresPrint, " with accuracy %f" % accuracy)
+    print("Using feature(s)", featuresPrint, " accuracy is ", accuracy * 100.0, '%')
     return accuracy
 #A basic nearest neighbor calcualation in which we calcualate the nearest neighbor of features    
 def NearestNeighbor(instances, instanceCount, removeOne, features):
@@ -115,6 +115,37 @@ def CalcStd(instances, instanceCount, featureCount, mean):
         
     return std
 
+def ForwardSelection(data, instanceCount, featureCount):
+    print('\n')
+    allFeatures = set()
+    currentAccuracy = 0
+    print('\n')
+    
+    for i in range(featureCount):
+        print("On level %d of the search tree" % (i + 1),\
+            "with our set as", allFeatures)
+        newFeature = -1
+        for j in range(1, featureCount + 1):
+            if (j not in allFeatures):
+                accuracy = CrossValidation(data, instanceCount,\
+                    allFeatures, j)
+                if accuracy > currentAccuracy:
+                    currentAccuracy = accuracy
+                    newFeature = j
+        if (newFeature > 0):
+            allFeatures.add(newFeature)
+            print("On level %d of the search tree," % ((i + 1)),\
+                "adding feature %d gives accuracy: ", curretAccuracy * 100.0, '%' \
+                % (newFeature, currentAccuracy))
+            print('\n')
+            
+        else:
+            print("Warning, Accuracy has decreased! stopping here.")
+            break
+    print('\n')
+    print("Finished search!! The best feature subset is ", allFeatures,\
+        "which has an an accuracy", currentAccuracy * 100.0,"%")
+    
 def main():
     print("Welcome to Justin Gaffords Feature Selection algorithm")
     filename = input("Type in the name of the file to test:")
