@@ -46,10 +46,33 @@ def CrossValidation(instances, instanceCount, existingFeatures, custFeature):
     accuracy = correct / instanceCount
     print("Testing features: ", featuresPrint, " with accuracy %f" % accuracy)
     return accuracy
+#A basic nearest neighbor calcualation in which we calcualate the nearest neighbor of features    
+def NearestNeighbor(instances, instanceCount, removeOne, features):
+    nn = -1
+    nnDist = float('inf')
+    featureCount = len(features)
     
-def NearestNeighbor(instances, instanceCount, removeOne, featuresPrint):
+    for i in range(0, instanceCount):
+        if (i == removeOne):
+            pass
+        else:
+            sum = 0
+            
+            for j in range(0, featureCount):
+                sum = sum + pow((instances[i][features[j]] - instances[removeOne][features[j]]), 2)
+                
+            distance = math.sqrt(sum)
+            if distance < nnDist:
+                nnDist = distance
+                nn = i
+                
+    return nn
 
+#function where we check the classification based upon the nearest neighbor
 def Classification(instances, nn, removeOne):
+    if (instances[nn][0] != instances[removeOne][0]):
+        return False
+    return True
 
 def main():
     
