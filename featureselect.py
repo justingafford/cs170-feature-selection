@@ -85,6 +85,7 @@ def ReadData(filename, instanceCount):
         instances[i] = [float(j) for j in file.readline().split()]
         
     return instances
+
 #here we normalize the data given from the text file, normInstances is temp value(makes sure we dont update instances
 def NormData(instances, instanceCount, featureCount):
     normInstances = list(instances)
@@ -115,6 +116,7 @@ def CalcStd(instances, instanceCount, featureCount, mean):
         
     return std
 
+#implements forward selection search method in order to find accuracy
 def ForwardSelection(data, instanceCount, featureCount):
     print('\n')
     allFeatures = set()
@@ -123,7 +125,7 @@ def ForwardSelection(data, instanceCount, featureCount):
     
     for i in range(featureCount):
         print("On level %d of the search tree" % (i + 1),\
-            "with our set as", allFeatures)
+            "and our feature set is ", allFeatures)
         newFeature = -1
         for j in range(1, featureCount + 1):
             if (j not in allFeatures):
@@ -134,9 +136,10 @@ def ForwardSelection(data, instanceCount, featureCount):
                     newFeature = j
         if (newFeature > 0):
             allFeatures.add(newFeature)
-            print("On level %d of the search tree," % ((i + 1)),\
-                "adding feature %d gives accuracy: ", curretAccuracy * 100.0, '%' \
-                % (newFeature, currentAccuracy))
+            print("On level %d of our the search tree," % (i+1),\
+                "adding feature %d gives accuracy: "\
+                % (newFeature))
+            print(currentAccuracy * 100, '%')
             print('\n')
             
         else:
@@ -146,6 +149,42 @@ def ForwardSelection(data, instanceCount, featureCount):
     print("Finished search!! The best feature subset is ", allFeatures,\
         "which has an an accuracy", currentAccuracy * 100.0,"%")
     
+#implements backward elimation search method in order to find accuracy
+def BackwardElimination(data, instanceCount, featureCount):
+    print('\n')
+    allFeatures = set(i + 1 for i in range(0, featureCount))
+    currentAccuracy = 0
+    print('\n')
+    
+    for i in range(featureCount):
+        print("On level %d of the search tree" % (i + 1),\
+            "and our feature set is ", allFeatures)
+        deleteFeature = -1
+        
+        for j in range(1, featureCount + 1):
+            if (j in allFeatures):
+                accuracy = CrossValidation(data, instanceCount,\
+                    allFeatures, (-1 *j))
+                if accuracy > currentAccuracy:
+                    currentAccuracy = accuracy
+                    deleteFeature = j
+                    
+        if (deleteFeature > 0):
+            allFeatures.remove(deleteFeature)
+            print("On level %d of our the search tree," % (i+1),\
+                "removing feature %d gives accuracy: "\
+                % (deleteFeature))
+            print(currentAccuracy * 100, '%')
+            print('\n')
+        else:
+            print("Warning Accuracy has decreased! Stopping Here")
+            break
+            
+    print('\n')
+    print("Finished search!! The best feature subset is ", allFeatures,\
+        "which has an an accuracy", currentAccuracy * 100.0,"%")
+    
+#implements backward elimation search method in order to find accuracy
 def main():
     print("Welcome to Justin Gaffords Feature Selection algorithm")
     filename = input("Type in the name of the file to test:")
